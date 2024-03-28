@@ -1,8 +1,15 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using fullStackTestApi.Models;
+using fullStackTestApi.Services;
+using fullStackTestApi.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.Configure<DbSettings>(
+    builder.Configuration.GetSection("NameDatabase"));
+builder.Services.AddSingleton<PersonService>();
+builder.Services.AddScoped<IHelper, Helper>();
+
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -24,20 +31,16 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
 // Enable CORS
 app.UseCors("AllowLocalhost4200");
 
-app.MapControllers();
+app.MapControllers();   
 
 app.Run();
-
