@@ -20,48 +20,33 @@ public class PersonController : ControllerBase
         _helper = helper;
     }
 
-    [HttpGet(Name = "GetName")]
+    [HttpGet(Name = "GetAllPersons")]
     public async Task<List<Person>> Get() => await _namesService.GetAsync();
 
-    [HttpGet("{name}", Name = "GetOneName")]
+    [HttpGet("{id}", Name = "GetOnePerson")]
 
-    public async Task<string> Get(string name)
+    public async Task<Person?> Get(string id) => await _namesService.GetAsync(id);
+
+    [HttpPost(Name = "CreatePerson")]
+    public async Task<IActionResult> Post (Person newPerson)
     {
-        var person = await _namesService.GetAsync(name);
-
-        if (person is not null) return person.PersonName.ToLower();
-        return "No one is here bro";
-    }
-
-    [HttpPost(Name = "PostName")]
-    public async Task<IActionResult> Post (string newName)
-    {
-        var newId = _helper.GenerateRandomNumber(24);
-
-        var nameToBeAdded = new Person
-        {
-            PersonName = newName,
-            Id = newId,
-            Quote = "Hello World"
-        };
-
-        await _namesService.CreateAsync(nameToBeAdded);
-        return CreatedAtAction(nameof(Get), new { id = nameToBeAdded.Id }, nameToBeAdded);
+        await _namesService.CreateAsync(newPerson);
+        return CreatedAtAction(nameof(Get), new { id = newPerson.Id }, newPerson);
     }
 
     [HttpPut("{id:length(24)}")]
-    public async Task<IActionResult> Update(string id, Person updatedName)
+    public async Task<IActionResult> Update(string id, Person updatedPerson)
     {
-        var name = await _namesService.GetAsync(id);
+        var person = await _namesService.GetAsync(id);
 
-        if (name is null)
+        if (person is null)
         {
             return NotFound();
         }
 
-        updatedName.Id = name.Id;
+        updatedPerson.Id = person.Id;
 
-        await _namesService.UpdateAsync(id, updatedName);
+        await _namesService.UpdateAsync(id, updatedPerson);
 
         return NoContent();
     }

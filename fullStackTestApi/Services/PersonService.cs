@@ -23,14 +23,14 @@ public class PersonService
     public async Task<List<Person>> GetAsync() =>
         await _namesCollection.Find(_ => true).ToListAsync();
 
-    public async Task<Person?> GetAsync(string name) =>
-        await _namesCollection.Find(x => x.PersonName.ToLower() == name.ToLower()).FirstOrDefaultAsync();
+    public async Task<Person?> GetAsync(string id) =>
+        await _namesCollection.Find(x => x.Id == id).FirstOrDefaultAsync();
 
     public async Task CreateAsync(Person newName) =>
         await _namesCollection.InsertOneAsync(newName);
 
-    public async Task UpdateAsync(string id, Person updatedName) =>
-        await _namesCollection.ReplaceOneAsync(x => x.Id == id, updatedName);
+    public async Task UpdateAsync(string id, Person updatedPerson) =>
+        await _namesCollection.ReplaceOneAsync(x => x.Id == id, updatedPerson);
 
     public async Task RemoveAsync(string id) =>
         await _namesCollection.DeleteOneAsync(x => x.Id == id);
